@@ -2,12 +2,12 @@ name: NSE_Daily_Automation
 
 on:
   schedule:
-    # Trigger the action every day at 5:00 PM IST (12:30 PM UTC)
+    # Trigger the action every day at 5:00 PM IST (11:30 PM UTC)
     - cron: "30 11 * * *"
   workflow_dispatch:
 
 jobs:
-  Fetch-nse-stock-bigquery-score:
+  Fetch-nse-stock:
     runs-on: ubuntu-latest
 
     steps:
