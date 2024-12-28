@@ -76,7 +76,7 @@ source_worksheet = spreadsheet.worksheet('symbol_bse')  # Test sheet name
 
 # Fetch all stock symbols from the first column
 symbols = source_worksheet.col_values(1)[1:]  # Skip header row
-symbols = [symbol if symbol.endswith('.NS') else f"{symbol}.NS" for symbol in symbols]
+symbols = [symbol if symbol.endswith('.BO') else f"{symbol}.BO" for symbol in symbols]
 
 # Define BigQuery dataset and table with the project ID
 PROJECT_ID = "stockautomation-442015"  # Replace with your project ID
