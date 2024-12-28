@@ -347,8 +347,8 @@ def create_consolidated_csv():
         """Load consolidated CSV data into a new BigQuery dataset and table."""
         try:
             # Define new BigQuery dataset and table for consolidated data
-            consolidated_dataset = f"consolidated_{current_year}"
-            consolidated_table = f"{PROJECT_ID}.{consolidated_dataset}.consolidated_nse_stock_{current_year}"
+            consolidated_dataset = f"consolidated_NSE_{current_year}"
+            consolidated_table = f"{PROJECT_ID}.{consolidated_dataset}.consolidated_NSE_stock_{current_year}"
 
             # Ensure the new dataset exists
             try:
