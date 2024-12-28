@@ -1,0 +1,70 @@
+name: NSE_Daily_Automation
+
+on:
+  schedule:
+    # Trigger the action every day at 5:00 PM IST (12:30 PM UTC)
+    - cron: "30 11 * * *"
+  workflow_dispatch:
+
+jobs:
+  Fetch-nse-stock-bigquery-score:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Step 2: Set up Python environment
+    - name: Set up Python 3.x
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    # Step 3: Install dependencies
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # Step 4: Set up Google Sheets Authentication
+    - name: Set Up Google Sheets Authentication
+      env:
+        SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+      run: |
+        echo "$SERVICE_ACCOUNT_JSON" > service_account.json
+
+    # Step 5: Configure Git
+    - name: Set up Git
+      run: |
+        git config --global user.name "Aravinthkumar NSE Master"
+        git config --global user.email "aravinthkumarj1@gmail.com"
+
+    # Step 6: Check if today is Saturday or Sunday
+    - name: Skip Saturdays and Sundays
+      id: check_day
+      run: |
+        DAY_OF_WEEK=$(date +%u) # 1=Monday, 7=Sunday
+        if [[ "$DAY_OF_WEEK" -eq 6 || "$DAY_OF_WEEK" -eq 7 ]]; then
+          echo "continue=false" >> $GITHUB_ENV
+        else
+          echo "continue=true" >> $GITHUB_ENV
+        fi
+
+    # Step 7: Run the NSE stock data update script
+    - name: Run NSE stock data to fetch
+      if: ${{ env.continue == 'true' }}
+      run: |
+        python scripts/NSE_Daily_Data.py
+
+    # Step 8: Authenticate and Push Changes
+    - name: Authenticate and Push Changes
+      if: ${{ env.continue == 'true' }}
+      env:
+        GH_PAT: ${{ secrets.GH_PAT }}
+      run: |
+        git remote set-url origin https://x-access-token:${GH_PAT}@github.com/greenteamz/Indian_Stock_Data.git
+        git status
+        git add  NSE* *.csv
+        git commit -m "$(date) NSE Daily update"
+        git push origin main --force
