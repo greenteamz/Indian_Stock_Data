@@ -1,0 +1,16 @@
+google-api-python-client
+gspread
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+beautifulsoup4
+yfinance
+pandas
+oauth2client
+bs4
+requests
+pytz
+openpyxl
+google-cloud-bigquery
+google-auth
+google-api-core
