@@ -55,7 +55,7 @@ jobs:
     - name: Run BSE stock data to fetch
       if: ${{ env.continue == 'true' }}
       run: |
-        python scripts/BSE_Daily_Data.py
+        python script/BSE_Daily_Data.py
 
     # Step 8: Authenticate and Push Changes
     - name: Authenticate and Push Changes
