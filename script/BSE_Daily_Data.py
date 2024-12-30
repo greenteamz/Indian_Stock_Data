@@ -391,7 +391,8 @@ def create_consolidated_csv():
             processed_data = preprocess_data(consolidated_file_path)
             
             # Write processed data back to a temporary CSV for BigQuery loading
-            consolidated_tmp_path = "consolidated_tmp.csv"
+            # consolidated_tmp_path = "consolidated_tmp.csv"
+            consolidated_tmp_path = os.path.join(MASTER_DIR, "consolidated_tmp.csv")
             
             # Check if the file exists, and delete it if it does
             if os.path.exists(consolidated_tmp_path):
@@ -914,7 +915,8 @@ def load_data_to_bigquery():
         processed_data = preprocess_data(Daily_CSV_FILE_PATH)
         
         # Write processed data back to a temporary CSV for BigQuery loading
-        temp_csv_path = "temp_processed.csv"
+        #temp_csv_path = "temp_processed.csv"
+        temp_csv_path = os.path.join(MASTER_DIR, "temp_processed.csv")
         
         # Check if the file exists, and delete it if it does
         if os.path.exists(temp_csv_path):
@@ -1034,7 +1036,7 @@ def load_data_to_gsheet(spreadsheet):
 
     # Write data back to the worksheet
     worksheet.update(data_to_update)
-    log_message(f"*** Data updated successfully in worksheet {sheet_name}. ***")
+    log_message(f"*** BSE Data updated successfully in worksheet {sheet_name}. ***")
     
 # BigQuery authentication
 bq_client = bigquery.Client.from_service_account_json(SERVICE_ACCOUNT_FILE)
