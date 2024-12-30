@@ -56,7 +56,7 @@ jobs:
     - name: Run NSE stock data to fetch
       if: ${{ env.continue == 'true' }}
       run: |
-        python scripts/NSE_Daily_Data.py
+        python script/NSE_Daily_Data.py
 
     # Step 8: Authenticate and Push Changes
     - name: Authenticate and Push Changes
