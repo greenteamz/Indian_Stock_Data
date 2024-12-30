@@ -964,7 +964,8 @@ def check_market_holiday(symbol, start_date, end_date):
     log_message(f"Data: {data}")
     
     # Check if the data includes the specified date range
-    if data.empty or not (start_date in data.index and end_date in data.index):
+    #if data.empty or not (start_date in data.index and end_date in data.index):
+    if data.empty or start_date not in data.index.strftime('%Y-%m-%d').tolist():
         log_message(f"Today is holiday or weekend. No trading data available for {symbol} from {start_date} to {end_date}.")
         sys.exit()  # Exit the script if it's a market holiday
     else:
