@@ -321,15 +321,35 @@ def create_consolidated_csv():
             writer.writerow(headers)
             log_message(f"Created consolidated_file_path= '{consolidated_file_path}'.")
 
-    # Append data to the consolidated CSV file
-    with open(consolidated_file_path, mode="a", newline="") as csv_file:
-        writer = csv.writer(csv_file)
-        for index, row in df.iterrows():
-            #data_row = [row[col] for col in headers]  # Create a list with all data
-            # Create a list with all data, handling potential absence of "Stock_Volatile"
-            data_row = [row[col] if col in df.columns else None for col in headers]
-            writer.writerow(data_row)
-    log_message(f"Append data to '{consolidated_file_path}' file.")
+    # Read existing consolidated CSV file if it exists
+    if os.path.exists(consolidated_file_path):
+        existing_df = pd.read_csv(consolidated_file_path)
+        log_message(f"Loaded existing consolidated CSV file: {consolidated_file_path}")
+    else:
+        existing_df = pd.DataFrame(columns=headers)
+        log_message(f"No existing consolidated CSV file found. Creating a new one.")
+
+    # Merge the new data with the existing data
+    merged_df = pd.concat([existing_df, df], ignore_index=True).drop_duplicates(subset=['Symbol_Input'], keep='last')
+
+    # Ensure all headers are present in the merged DataFrame
+    for header in headers:
+        if header not in merged_df.columns:
+            merged_df[header] = None
+
+    # Write the merged DataFrame back to the consolidated CSV file
+    merged_df.to_csv(consolidated_file_path, index=False)
+    log_message(f"Data merged and saved to consolidated CSV file: {consolidated_file_path}")
+    
+    # # Append data to the consolidated CSV file
+    # with open(consolidated_file_path, mode="a", newline="") as csv_file:
+    #     writer = csv.writer(csv_file)
+    #     for index, row in df.iterrows():
+    #         #data_row = [row[col] for col in headers]  # Create a list with all data
+    #         # Create a list with all data, handling potential absence of "Stock_Volatile"
+    #         data_row = [row[col] if col in df.columns else None for col in headers]
+    #         writer.writerow(data_row)
+    # log_message(f"Append data to '{consolidated_file_path}' file.")
 
     # Update daily change data (only for today's date)
     today_str = today.strftime("%d_%m")
@@ -1033,6 +1053,9 @@ def load_data_to_gsheet(spreadsheet):
     # Step 6: Write updated data back to the worksheet
     # Prepare data for writing
     data_to_update = [merged_df.columns.tolist()] + merged_df.fillna("").values.tolist()
+
+    # Write data back to the worksheet, starting from the first row
+    worksheet.clear()  # Clear the worksheet before updating
 
     # Write data back to the worksheet
     worksheet.update(data_to_update)
