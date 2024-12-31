@@ -330,7 +330,24 @@ def create_consolidated_csv():
         log_message(f"No existing consolidated CSV file found. Creating a new one.")
 
     # Merge the new data with the existing data
-    merged_df = pd.concat([existing_df, df], ignore_index=True).drop_duplicates(subset=['Symbol_Input'], keep='last')
+    #merged_df = pd.concat([existing_df, df], ignore_index=True).drop_duplicates(subset=['Symbol_Input'], keep='last')
+
+    # Identify columns to merge (up to 'Stock_Volatile_Percentage')
+    merge_headers = headers[:headers.index("Stock_Volatile_Percentage") + 1]
+    
+    # Split the existing DataFrame into two parts
+    merge_part = existing_df[merge_headers] if not existing_df.empty else pd.DataFrame(columns=merge_headers)
+    preserve_part = existing_df.drop(columns=merge_headers, errors='ignore') if not existing_df.empty else pd.DataFrame()
+    
+    # Merge the new data with the merging part
+    merged_part = pd.concat([merge_part, df[merge_headers]], ignore_index=True).drop_duplicates(subset=['Symbol_Input'], keep='last')
+    
+    # Combine the merged part with the preserved part
+    if not preserve_part.empty:
+        # Align the row count of preserve_part to match merged_part
+        preserve_part = preserve_part.reindex(merged_part.index, fill_value=None)
+    
+    merged_df = pd.concat([merged_part, preserve_part], axis=1)
 
     # Ensure all headers are present in the merged DataFrame
     for header in headers:
