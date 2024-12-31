@@ -1040,6 +1040,9 @@ def load_data_to_gsheet(spreadsheet):
     # Prepare data for writing
     data_to_update = [merged_df.columns.tolist()] + merged_df.fillna("").values.tolist()
 
+    # Write data back to the worksheet, starting from the first row
+    worksheet.clear()  # Clear the worksheet before updating
+    
     # Write data back to the worksheet
     worksheet.update(data_to_update)
     log_message(f"*** NSE Data updated successfully in worksheet {sheet_name}. ***")
