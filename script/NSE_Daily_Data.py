@@ -320,16 +320,35 @@ def create_consolidated_csv():
             writer = csv.writer(csv_file)
             writer.writerow(headers)
             log_message(f"Created consolidated_file_path= '{consolidated_file_path}'.")
+            
+    # Read existing consolidated CSV file if it exists
+    if os.path.exists(consolidated_file_path):
+        existing_df = pd.read_csv(consolidated_file_path)
+        log_message(f"Loaded existing consolidated CSV file: {consolidated_file_path}")
+    else:
+        existing_df = pd.DataFrame(columns=headers)
+        log_message(f"No existing consolidated CSV file found. Creating a new one.")
 
+    # Merge the new data with the existing data
+    merged_df = pd.concat([existing_df, df], ignore_index=True).drop_duplicates(subset=['Symbol_Input'], keep='last')
+
+    # Ensure all headers are present in the merged DataFrame
+    for header in headers:
+        if header not in merged_df.columns:
+            merged_df[header] = None
+
+    # Write the merged DataFrame back to the consolidated CSV file
+    merged_df.to_csv(consolidated_file_path, index=False)
+    log_message(f"Data merged and saved to consolidated CSV file: {consolidated_file_path}")
     # Append data to the consolidated CSV file
-    with open(consolidated_file_path, mode="a", newline="") as csv_file:
-        writer = csv.writer(csv_file)
-        for index, row in df.iterrows():
-            #data_row = [row[col] for col in headers]  # Create a list with all data
-            # Create a list with all data, handling potential absence of "Stock_Volatile"
-            data_row = [row[col] if col in df.columns else None for col in headers]
-            writer.writerow(data_row)
-    log_message(f"Append data to '{consolidated_file_path}' file.")
+    # with open(consolidated_file_path, mode="a", newline="") as csv_file:
+    #     writer = csv.writer(csv_file)
+    #     for index, row in df.iterrows():
+    #         #data_row = [row[col] for col in headers]  # Create a list with all data
+    #         # Create a list with all data, handling potential absence of "Stock_Volatile"
+    #         data_row = [row[col] if col in df.columns else None for col in headers]
+    #         writer.writerow(data_row)
+    # log_message(f"Append data to '{consolidated_file_path}' file.")
 
     # Update daily change data (only for today's date)
     today_str = today.strftime("%d_%m")
@@ -363,20 +382,7 @@ def create_consolidated_csv():
             consolidated_schema = [
                 bigquery.SchemaField(header, data_type_map.get(header, "STRING"))
                 for header in headers
-            ]             # + [
-            #     bigquery.SchemaField("Stock_Volatile", "FLOAT"),
-            #     bigquery.SchemaField("Stock_Volatile_Percentage", "FLOAT"),
-            #     bigquery.SchemaField("Expert_Comments", "STRING"),
-            #     bigquery.SchemaField("Expert_Review", "STRING")
-            # ] + [
-            #     bigquery.SchemaField(header, "FLOAT") for header in daily_change_headers
-            # ] + [
-            #     bigquery.SchemaField(header, "FLOAT") for header in weekly_change_headers
-            # ] + [
-            #     bigquery.SchemaField(header, "FLOAT") for header in monthly_change_headers
-            # ] + [
-            #     bigquery.SchemaField(header, "FLOAT") for header in yearly_change_headers
-            # ]
+            ]   
 
             # Create the consolidated table if it doesn't exist
             try:
@@ -391,7 +397,7 @@ def create_consolidated_csv():
             processed_data = preprocess_data(consolidated_file_path)
             
             # Write processed data back to a temporary CSV for BigQuery loading
-            # consolidated_tmp_path = "consolidated_tmp.csv"
+            
             consolidated_tmp_path = os.path.join(MASTER_DIR, "consolidated_tmp.csv")
             
             # Check if the file exists, and delete it if it does
