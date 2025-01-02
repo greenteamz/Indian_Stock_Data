@@ -18,9 +18,15 @@ import sys
 IST = pytz.timezone('Asia/Kolkata')
 
 # Current IST datetime
-ist_now = datetime.now(IST)
+#ist_now = datetime.now(IST)
 
 # Extract the date part from IST datetime
+#ist_date = ist_now.date()
+
+# Set IST datetime to yesterday
+ist_now = datetime.now(IST) - timedelta(days=1)
+
+# Extract the date part from yesterday's IST datetime
 ist_date = ist_now.date()
 
 current_year = ist_date.year  # Extract the current year
