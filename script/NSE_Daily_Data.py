@@ -366,7 +366,7 @@ def create_consolidated_csv():
     merged_df.to_csv(consolidated_file_path, index=False)
     log_message(f"Data merged and saved to consolidated CSV file: {consolidated_file_path}")
     """
-     Append data to the consolidated CSV file
+     #Append data to the consolidated CSV file
      with open(consolidated_file_path, mode="a", newline="") as csv_file:
          writer = csv.writer(csv_file)
          for index, row in df.iterrows():
