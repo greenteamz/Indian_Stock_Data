@@ -18,15 +18,9 @@ import sys
 IST = pytz.timezone('Asia/Kolkata')
 
 # Current IST datetime
-#ist_now = datetime.now(IST)
+ist_now = datetime.now(IST)
 
 # Extract the date part from IST datetime
-#ist_date = ist_now.date()
-
-# Set IST datetime to yesterday
-ist_now = datetime.now(IST) - timedelta(days=1)
-
-# Extract the date part from yesterday's IST datetime
 ist_date = ist_now.date()
 
 current_year = ist_date.year  # Extract the current year
@@ -328,7 +322,7 @@ def create_consolidated_csv():
             log_message(f"Created consolidated_file_path= '{consolidated_file_path}'.")
             
     # Read existing consolidated CSV file if it exists
-    """
+    
     if os.path.exists(consolidated_file_path):
 
     existing_df = pd.read_csv(consolidated_file_path)
@@ -340,8 +334,8 @@ def create_consolidated_csv():
     # Merge the new data with the existing data
     #merged_df = pd.concat([existing_df, df], ignore_index=True).drop_duplicates(subset=['Symbol_Input'], keep='last')
 
-    # Identify columns to merge (up to 'Stock_Volatile_Percentage')
-    merge_headers = headers[:headers.index("Stock_Volatile_Percentage") + 1]
+    # Identify columns to merge (up to 'industry_rank')
+    merge_headers = headers[:headers.index("industry_rank") + 1]
     
     # Split the existing DataFrame into two parts
     merge_part = existing_df[merge_headers] if not existing_df.empty else pd.DataFrame(columns=merge_headers)
@@ -365,8 +359,9 @@ def create_consolidated_csv():
     # Write the merged DataFrame back to the consolidated CSV file
     merged_df.to_csv(consolidated_file_path, index=False)
     log_message(f"Data merged and saved to consolidated CSV file: {consolidated_file_path}")
+
     """
-     #Append data to the consolidated CSV file
+    #Append data to the consolidated CSV file
     with open(consolidated_file_path, mode="a", newline="") as csv_file:
         writer = csv.writer(csv_file)
         for index, row in df.iterrows():
@@ -375,6 +370,7 @@ def create_consolidated_csv():
             data_row = [row[col] if col in df.columns else None for col in headers]
             writer.writerow(data_row)
     log_message(f"Append data to '{consolidated_file_path}' file.")
+    """
 
     # Update daily change data (only for today's date)
     today_str = today.strftime("%d_%m")
@@ -1053,7 +1049,7 @@ def load_data_to_gsheet(spreadsheet):
     # Step 5: Combine the new data with existing data
     if not existing_df.empty:
         # Combine new data with existing data and drop duplicates
-        merged_df = pd.concat([existing_df, df], ignore_index=True).drop_duplicates()
+        merged_df = pd.concat([existing_df, df], ignore_index=True).drop_duplicates(subset=["Symbol_Input"], keep="last")
         # Ensure unmatched columns from existing_df are retained
         for col in existing_df.columns:
             if col not in merged_df.columns:
