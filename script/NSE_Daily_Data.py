@@ -439,7 +439,7 @@ def create_consolidated_csv():
                 job_config = bigquery.LoadJobConfig(
                 source_format=bigquery.SourceFormat.CSV,
                 skip_leading_rows=1,  # Skip header row
-                write_disposition="WRITE_APPEND",  # Append data
+                write_disposition="WRITE_APPEND",  # Append data "WRITE_TRUNCATE",  # Overwrite table
                 autodetect=False,
                 max_bad_records=500,  # Tolerate up to 500 bad rows
                 )
