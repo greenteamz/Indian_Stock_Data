@@ -3,7 +3,7 @@ name: BSE_Daily_Automation
 on:
   schedule:
     # Trigger the action every day at 7:00 PM IST (13:30 PM UTC)
-    - cron: "50 17 * * *"
+    - cron: "05 18 * * *"
   workflow_dispatch:
 
 jobs:
