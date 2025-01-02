@@ -322,10 +322,8 @@ def create_consolidated_csv():
             log_message(f"Created consolidated_file_path= '{consolidated_file_path}'.")
             
     # Read existing consolidated CSV file if it exists
-    
     if os.path.exists(consolidated_file_path):
-
-    existing_df = pd.read_csv(consolidated_file_path)
+        existing_df = pd.read_csv(consolidated_file_path)
         log_message(f"Loaded existing consolidated CSV file: {consolidated_file_path}")
     else:
         existing_df = pd.DataFrame(columns=headers)
