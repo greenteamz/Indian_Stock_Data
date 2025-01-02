@@ -329,14 +329,33 @@ def create_consolidated_csv():
         existing_df = pd.DataFrame(columns=headers)
         log_message(f"No existing consolidated CSV file found. Creating a new one.")
 
-    # Merge the new data with the existing data
-    merged_df = pd.concat([existing_df, df], ignore_index=True).drop_duplicates(subset=['Symbol_Input'], keep='last')
+    # Identify columns to merge (up to 'industry_rank')
+    merge_headers = headers[:headers.index("industry_rank") + 1]
+    
+    # Split the existing DataFrame into two parts
+    merge_part = existing_df[merge_headers] if not existing_df.empty else pd.DataFrame(columns=merge_headers)
+    preserve_part = existing_df.drop(columns=merge_headers, errors='ignore') if not existing_df.empty else pd.DataFrame()
+
+    # Merge the new data with the merging part
+    merged_part = pd.concat([merge_part, df[merge_headers]], ignore_index=True).drop_duplicates(subset=['Symbol_Input'], keep='last')
+
+    # Reorder merged_df based on the order of Symbol_Input in the input df
+    input_order = df['Symbol_Input'].drop_duplicates().tolist()  # Maintain the input order
+    merged_part['Symbol_Input'] = pd.Categorical(merged_part['Symbol_Input'], categories=input_order, ordered=True)
+    merged_part = merged_part.sort_values('Symbol_Input').reset_index(drop=True)
+    
+    merged_df = pd.concat([merged_part, preserve_part], axis=1)
+
+    # Ensure preserve_part retains all daily change columns
+    #daily_columns = [col for col in preserve_part.columns if col.startswith("D") and "_Diff" in col]
+    #preserve_part = preserve_part.reindex(columns=daily_columns + list(merged_part.columns), fill_value=None)
 
     # Ensure all headers are present in the merged DataFrame
     for header in headers:
         if header not in merged_df.columns:
+            log_message(header)
             merged_df[header] = None
-
+    
     # Write the merged DataFrame back to the consolidated CSV file
     merged_df.to_csv(consolidated_file_path, index=False)
     log_message(f"Data merged and saved to consolidated CSV file: {consolidated_file_path}")
@@ -1041,7 +1060,7 @@ def load_data_to_gsheet(spreadsheet):
     # Step 5: Combine the new data with existing data
     if not existing_df.empty:
         # Combine new data with existing data and drop duplicates
-        merged_df = pd.concat([existing_df, df], ignore_index=True).drop_duplicates()
+        merged_df = pd.concat([existing_df, df], ignore_index=True).drop_duplicates(subset=["Symbol_Input"], keep="last")
         # Ensure unmatched columns from existing_df are retained
         for col in existing_df.columns:
             if col not in merged_df.columns:
