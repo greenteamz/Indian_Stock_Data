@@ -323,7 +323,7 @@ def create_consolidated_csv():
             
     # Read existing consolidated CSV file if it exists
     if os.path.exists(consolidated_file_path):
-        existing_df = pd.read_csv(consolidated_file_path)
+        existing_df = pd.read_csv(consolidated_file_path, low_memory=False)
         log_message(f"Loaded existing consolidated CSV file: {consolidated_file_path}")
     else:
         existing_df = pd.DataFrame(columns=headers)
@@ -338,22 +338,27 @@ def create_consolidated_csv():
     # Split the existing DataFrame into two parts
     merge_part = existing_df[merge_headers] if not existing_df.empty else pd.DataFrame(columns=merge_headers)
     preserve_part = existing_df.drop(columns=merge_headers, errors='ignore') if not existing_df.empty else pd.DataFrame()
-    
+
     # Merge the new data with the merging part
     merged_part = pd.concat([merge_part, df[merge_headers]], ignore_index=True).drop_duplicates(subset=['Symbol_Input'], keep='last')
-    
-    # Combine the merged part with the preserved part
-    if not preserve_part.empty:
-        # Align the row count of preserve_part to match merged_part
-        preserve_part = preserve_part.reindex(merged_part.index, fill_value=None)
+
+    # Reorder merged_df based on the order of Symbol_Input in the input df
+    input_order = df['Symbol_Input'].drop_duplicates().tolist()  # Maintain the input order
+    merged_part['Symbol_Input'] = pd.Categorical(merged_part['Symbol_Input'], categories=input_order, ordered=True)
+    merged_part = merged_part.sort_values('Symbol_Input').reset_index(drop=True)
     
     merged_df = pd.concat([merged_part, preserve_part], axis=1)
+
+    # Ensure preserve_part retains all daily change columns
+    #daily_columns = [col for col in preserve_part.columns if col.startswith("D") and "_Diff" in col]
+    #preserve_part = preserve_part.reindex(columns=daily_columns + list(merged_part.columns), fill_value=None)
 
     # Ensure all headers are present in the merged DataFrame
     for header in headers:
         if header not in merged_df.columns:
+            log_message(header)
             merged_df[header] = None
-
+    
     # Write the merged DataFrame back to the consolidated CSV file
     merged_df.to_csv(consolidated_file_path, index=False)
     log_message(f"Data merged and saved to consolidated CSV file: {consolidated_file_path}")
@@ -468,7 +473,7 @@ def update_consolidated_data(file_path, source_column, target_columns):
         target_columns: List of target column names.
     """
     
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(file_path, low_memory=False)
     for target_column in target_columns:
         df[target_column] = df[source_column]
     df.to_csv(file_path, index=False)
@@ -484,7 +489,7 @@ def calculate_and_update_changes(file_path, daily_change_headers, weekly_change_
         weekly_change_headers: List of weekly change headers.
         monthly_change_headers: List of monthly change headers.
     """
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(file_path, low_memory=False)
 
     # Calculate weekly changes
     for week_start_index in range(0, len(daily_change_headers), 5):  # Assuming 5 business days per week
@@ -515,7 +520,7 @@ def calculate_stock_volatility(file_path):
     Args:
         file_path: Path to the consolidated CSV file. Stock_Volatile_Percentage .round(2)
     """
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(file_path, low_memory=False)
     df["Stock_Volatile"] = (df["dayHigh"] - df["dayLow"])
     df["Stock_Volatile"] = df["Stock_Volatile"].round(2)
     df["Stock_Volatile_Percentage"] = (df["dayHigh"] - df["dayLow"]) / df["dayHigh"] * 100
