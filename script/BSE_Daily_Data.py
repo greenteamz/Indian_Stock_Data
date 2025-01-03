@@ -211,7 +211,7 @@ rank_headers = ["sector_rank", "industry_rank"]
 ROW_COUNTER_FILE = os.path.join(MASTER_DIR, "bse_row_counter.txt")
 
 current_year = datetime.now().year
-consolidated_file = f"Consolidated_{current_year}.csv"
+consolidated_file = f"BSE_Consolidated_{current_year}.csv"
 consolidated_file_path = os.path.join(MASTER_DIR, consolidated_file)
     
 # Initialize row_insert_order
