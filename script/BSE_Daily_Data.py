@@ -1061,13 +1061,17 @@ def load_data_to_gsheet(spreadsheet):
     if not existing_df.empty:
         # Combine new data with existing data and drop duplicates
         merged_df = pd.concat([existing_df, df], ignore_index=True).drop_duplicates(subset=["Symbol_Input"], keep="last")
+        merged_df.reset_index(drop=True, inplace=True)  # Reset the index
         # Ensure unmatched columns from existing_df are retained
         for col in existing_df.columns:
             if col not in merged_df.columns:
-                merged_df[col] = existing_df[col]
+                merged_df[col] = existing_df[col].reindex(merged_df.index, fill_value="")  # Align rows properly
     else:
         # If the sheet is empty, just use the new data
         merged_df = df
+
+    # Drop index before writing back to Google Sheets
+    data_to_update = [merged_df.columns.tolist()] + merged_df.fillna("").reset_index(drop=True).values.tolist()
 
     # Step 6: Write updated data back to the worksheet
     # Prepare data for writing
