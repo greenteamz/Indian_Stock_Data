@@ -510,6 +510,9 @@ def calculate_and_update_changes(file_path, daily_change_headers, weekly_change_
 
     # Calculate yearly changes
     df[yearly_change_headers[0]] = df[monthly_change_headers].sum(axis=1)
+    df[week_change_header] = df[week_change_header].round(2)
+    df[month_change_header] = df[month_change_header].round(2)
+    df[yearly_change_headers[0]] = df[yearly_change_headers[0]].round(2)
     log_message(f"Updated today changes to weekly, monthly and yearly headers.")
     df.to_csv(file_path, index=False)
 
