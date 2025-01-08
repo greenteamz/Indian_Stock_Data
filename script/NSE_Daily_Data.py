@@ -490,7 +490,42 @@ def calculate_and_update_changes(file_path, daily_change_headers, weekly_change_
         monthly_change_headers: List of monthly change headers.
     """
     df = pd.read_csv(file_path, low_memory=False)
+    
+    # Create weekly groups based on actual business days
+    week_groups = []
+    current_week = []
+    for day in business_days:
+        current_week.append(day)
+        if len(current_week) == 5 or day == business_days[-1]:
+            week_groups.append(current_week)
+            current_week = []
 
+    # Calculate weekly changes based on actual weekly groups
+    for week_index, week_days in enumerate(week_groups):
+        week_start = week_days[0]
+        week_end = week_days[-1]
+        week_change_header = weekly_change_headers[week_index]
+
+        # Build the daily change headers for this week
+        daily_headers_in_week = [f"D{day.strftime('%d_%m')}_Diff" for day in week_days if f"D{day.strftime('%d_%m')}_Diff" in daily_change_headers]
+
+        # Calculate the weekly sum
+        if daily_headers_in_week:
+            df[week_change_header] = df[daily_headers_in_week].sum(axis=1)
+
+    # Calculate monthly changes based on daily changes
+    for month in range(1, 13):
+        month_str = f"M{month:02d}_{current_year}"
+        month_change_header = month_str
+        month_start = datetime(current_year, month, 1)
+        month_end = month_start + pd.offsets.MonthEnd(0)
+        business_days_in_month = [day for day in business_days if month_start <= day <= month_end]
+        daily_change_headers_in_month = [f"D{day.strftime('%d_%m')}_Diff" for day in business_days_in_month if f"D{day.strftime('%d_%m')}_Diff" in daily_change_headers]
+        
+        # Calculate the monthly sum
+        if daily_change_headers_in_month:
+            df[month_change_header] = df[daily_change_headers_in_month].sum(axis=1)
+    """
     # Calculate weekly changes
     for week_start_index in range(0, len(daily_change_headers), 5):  # Assuming 5 business days per week
         week_end_index = min(week_start_index + 4, len(daily_change_headers) - 1)  # Handle potential incomplete weeks
@@ -508,6 +543,7 @@ def calculate_and_update_changes(file_path, daily_change_headers, weekly_change_
         daily_change_headers_in_month = [f"D{day.strftime('%d_%m')}_Diff" for day in business_days_in_month]
         df[month_change_header] = df[daily_change_headers_in_month].sum(axis=1)
 
+    """
     # Calculate yearly changes
     df[yearly_change_headers[0]] = df[monthly_change_headers].sum(axis=1)
     df[week_change_header] = df[week_change_header].round(2)
