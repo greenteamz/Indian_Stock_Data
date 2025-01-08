@@ -1053,17 +1053,47 @@ def load_data_to_gsheet(spreadsheet):
         log_message(f"No existing data found in worksheet {sheet_name}.")
 
     # Step 5: Combine the new data with existing data
+    # if not existing_df.empty:
+    #     # Combine new data with existing data and drop duplicates
+    #     merged_df = pd.concat([existing_df, df], ignore_index=True).drop_duplicates(subset=["Symbol_Input"], keep="last")
+    #     # Ensure unmatched columns from existing_df are retained
+    #     for col in existing_df.columns:
+    #         if col not in merged_df.columns:
+    #             merged_df[col] = existing_df[col]
+    # else:
+    #     # If the sheet is empty, just use the new data
+    #     merged_df = df
+    
+    # Step 5: Combine the new data with existing data
     if not existing_df.empty:
         # Combine new data with existing data and drop duplicates
         merged_df = pd.concat([existing_df, df], ignore_index=True).drop_duplicates(subset=["Symbol_Input"], keep="last")
-        # Ensure unmatched columns from existing_df are retained
-        for col in existing_df.columns:
+        merged_df.reset_index(drop=True, inplace=True)  # Reset index to align with unmatched column data
+    
+        # Add unmatched column data from row 0
+        if not unmatched_data.empty:
+            unmatched_data = unmatched_data.reindex(merged_df.index, fill_value="")  # Align the indexes
+            for col in unmatched_data.columns:
+                if col not in merged_df.columns:
+                    merged_df[col] = unmatched_data[col]
+    
+        # Validate unmatched column data presence
+        for col in unmatched_columns:
             if col not in merged_df.columns:
-                merged_df[col] = existing_df[col]
+                log_message(f"Warning: Column {col} not retained in final DataFrame.")
+            else:
+                # Validate the data row-by-row
+                unmatched_col_data = unmatched_data[col].fillna("")
+                merged_col_data = merged_df[col].fillna("")
+    
+                if not unmatched_col_data.equals(merged_col_data):
+                    log_message(f"Warning: Data mismatch found in column {col}.")
+                else:
+                    log_message(f"Validation successful for column {col}.")
     else:
         # If the sheet is empty, just use the new data
         merged_df = df
-
+    
     # Step 6: Write updated data back to the worksheet
     # Prepare data for writing
     data_to_update = [merged_df.columns.tolist()] + merged_df.fillna("").values.tolist()
