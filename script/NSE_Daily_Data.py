@@ -1100,6 +1100,10 @@ def load_data_to_gsheet(spreadsheet):
     #     # If the sheet is empty, just use the new data
     #     merged_df = df
     
+    # Step 5.0: Preserve unmatched columns and their data
+    unmatched_columns = [col for col in existing_df.columns if col not in df.columns]
+    unmatched_data = existing_df[unmatched_columns] if unmatched_columns else pd.DataFrame()
+
     # Step 5: Combine the new data with existing data
     if not existing_df.empty:
         # Combine new data with existing data and drop duplicates
