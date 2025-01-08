@@ -1060,7 +1060,6 @@ for symbol in symbols:
     time.sleep(0.7)
     log_message(f"Processed {processed_count}/{len(symbols)} symbols.")
 
-
 def load_data_to_gsheet(spreadsheet):
     # Google Sheet and worksheet names
     sheet_name = f"NSE_{current_year}"
@@ -1088,55 +1087,42 @@ def load_data_to_gsheet(spreadsheet):
         existing_df = pd.DataFrame()  # If the worksheet is empty, start fresh
         log_message(f"No existing data found in worksheet {sheet_name}.")
 
-    # Step 5: Combine the new data with existing data
-    # if not existing_df.empty:
-    #     # Combine new data with existing data and drop duplicates
-    #     merged_df = pd.concat([existing_df, df], ignore_index=True).drop_duplicates(subset=["Symbol_Input"], keep="last")
-    #     # Ensure unmatched columns from existing_df are retained
-    #     for col in existing_df.columns:
-    #         if col not in merged_df.columns:
-    #             merged_df[col] = existing_df[col]
-    # else:
-    #     # If the sheet is empty, just use the new data
-    #     merged_df = df
-    
     # Step 5.0: Preserve unmatched columns and their data
     unmatched_columns = [col for col in existing_df.columns if col not in df.columns]
-    unmatched_data = existing_df[unmatched_columns] if unmatched_columns else pd.DataFrame()
+    unmatched_data = pd.DataFrame()
+
+    if unmatched_columns:
+        unmatched_data = existing_df[unmatched_columns]
+        log_message(f"Unmatched columns identified: {unmatched_columns}.")
+    else:
+        log_message("No unmatched columns found.")
 
     # Step 5: Combine the new data with existing data
-    if not existing_df.empty:
-        # Combine new data with existing data and drop duplicates
-        merged_df = pd.concat([existing_df, df], ignore_index=True).drop_duplicates(subset=["Symbol_Input"], keep="last")
-        merged_df.reset_index(drop=True, inplace=True)  # Reset index to align with unmatched column data
+    if not existing_df.empty:       
+        # Merge new data with existing data
+        merged_part = pd.concat([existing_df[df.columns], df], ignore_index=True).drop_duplicates(subset=["Symbol_Input"], keep="last")
     
-        # Add unmatched column data from row 0
-        if not unmatched_data.empty:
-            unmatched_data = unmatched_data.reindex(merged_df.index, fill_value="")  # Align the indexes
-            for col in unmatched_data.columns:
-                if col not in merged_df.columns:
-                    merged_df[col] = unmatched_data[col]
-    
-        # Validate unmatched column data presence
+        # Align indexes for unmatched columns
+        unmatched_data = unmatched_data.reset_index(drop=True)
+        merged_part = merged_part.reset_index(drop=True)
+        
+        # Combine unmatched columns back into merged data
+        merged_df = pd.concat([merged_part, unmatched_data], axis=1)
+        
+        # Validate retained data
         for col in unmatched_columns:
-            if col not in merged_df.columns:
-                log_message(f"Warning: Column {col} not retained in final DataFrame.")
+            if col not in merged_df.columns or merged_df[col].isna().all():
+                log_message(f"Warning: Data mismatch found in column {col}.")
             else:
-                # Validate the data row-by-row
-                unmatched_col_data = unmatched_data[col].fillna("")
-                merged_col_data = merged_df[col].fillna("")
-    
-                if not unmatched_col_data.equals(merged_col_data):
-                    log_message(f"Warning: Data mismatch found in column {col}.")
-                else:
-                    log_message(f"Validation successful for column {col}.")
+                log_message(f"Column {col} successfully retained.")
+                
     else:
         # If the sheet is empty, just use the new data
         merged_df = df
     
     # Step 6: Write updated data back to the worksheet
     # Prepare data for writing
-    data_to_update = [merged_df.columns.tolist()] + merged_df.fillna("").values.tolist()
+    data_to_update = [merged_df.columns.tolist()] + merged_df.fillna("").astype(str).values.tolist()
 
     # Write data back to the worksheet, starting from the first row
     worksheet.clear()  # Clear the worksheet before updating
@@ -1144,6 +1130,7 @@ def load_data_to_gsheet(spreadsheet):
     # Write data back to the worksheet
     worksheet.update(data_to_update)
     log_message(f"*** NSE Data updated successfully in worksheet {sheet_name}. ***")
+
     
 # BigQuery authentication
 bq_client = bigquery.Client.from_service_account_json(SERVICE_ACCOUNT_FILE)
