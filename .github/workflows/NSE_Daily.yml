@@ -2,8 +2,8 @@ name: NSE_Daily_Automation
 
 on:
   schedule:
-    # Trigger the action every day at 5:00 PM IST (11:30 PM UTC)
-    - cron: "30 11 * * *"
+    # Trigger the action every day at 4:00 PM IST (10:30 PM UTC)
+    - cron: "30 10 * * *"
   workflow_dispatch:
 
 jobs:
@@ -54,9 +54,10 @@ jobs:
 
     # Step 7: Run the NSE stock data update script
     - name: Run NSE stock data to fetch
+      continue-on-error: true
       if: ${{ env.continue == 'true' }}
       run: |
-        python script/NSE_Daily_Data.py
+        python script/NSE_Daily_Data.py || echo "Warning: Step 7 (NSE stock data fetch) failed, but continuing the workflow."
 
     # Step 8: Authenticate and Push Changes
     - name: Authenticate and Push Changes
