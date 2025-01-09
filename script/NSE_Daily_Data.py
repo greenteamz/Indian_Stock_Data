@@ -492,32 +492,32 @@ def calculate_and_update_changes(file_path, daily_change_headers, weekly_change_
     df = pd.read_csv(file_path, low_memory=False)
     
     # Create weekly groups based on actual business days
+    # Function to check if the day is the last day of the week
+    def is_end_of_week(day, business_days):
+        next_day = day + timedelta(days=1)
+        return next_day not in business_days or next_day.weekday() == 0
+    
+    # Create weekly groups based on actual business days
     week_groups = []
     current_week = []
     
-    # Iterate through all business days
     for day in business_days:
-        # Start a new week if the day belongs to a new year
-        if current_week and day.year != current_week[-1].year:
-            week_groups.append(current_week)
-            current_week = []
-    
         # Add the current day to the current week
         current_week.append(day)
     
-        # If the week has 5 days or it's the last day, finalize the week group
-        if len(current_week) == 5 or day == business_days[-1]:
+        # Check if the current day is the end of the week
+        if is_end_of_week(day, business_days):
             week_groups.append(current_week)
             current_week = []
     
-    # Handle any leftover days (e.g., partial weeks at the start or end)
+    # Handle any leftover days (e.g., at the very end of the year)
     if current_week:
         week_groups.append(current_week)
     
     # Log the weekly groups for debugging
     log_message(f"Weekly groups formed: {[[day.strftime('%Y-%m-%d') for day in week] for week in week_groups]}")
     
-    # Calculate weekly changes based on actual weekly groups
+    # Calculate weekly changes based on properly aligned weekly groups
     for week_index, week_days in enumerate(week_groups):
         week_start = week_days[0]
         week_end = week_days[-1]
@@ -525,8 +525,8 @@ def calculate_and_update_changes(file_path, daily_change_headers, weekly_change_
     
         # Build the daily change headers for this week
         daily_headers_in_week = [
-            f"D{day.strftime('%d_%m')}_Diff" 
-            for day in week_days 
+            f"D{day.strftime('%d_%m')}_Diff"
+            for day in week_days
             if f"D{day.strftime('%d_%m')}_Diff" in daily_change_headers
         ]
     
