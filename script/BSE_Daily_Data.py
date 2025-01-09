@@ -499,11 +499,52 @@ def calculate_and_update_changes(file_path, daily_change_headers, weekly_change_
     """
     df = pd.read_csv(file_path)
 
-    # Calculate weekly changes
-    for week_start_index in range(0, len(daily_change_headers), 5):  # Assuming 5 business days per week
-        week_end_index = min(week_start_index + 4, len(daily_change_headers) - 1)  # Handle potential incomplete weeks
-        week_change_header = weekly_change_headers[week_start_index // 5]  # Get the corresponding weekly header
-        df[week_change_header] = df[daily_change_headers[week_start_index:week_end_index + 1]].sum(axis=1)
+    # Function to check if the day is the last day of the week
+    def is_end_of_week(day, business_days):
+        next_day = day + timedelta(days=1)
+        return next_day not in business_days or next_day.weekday() == 0
+    
+    # Create weekly groups based on actual business days
+    week_groups = []
+    current_week = []
+    
+    for day in business_days:
+        # Add the current day to the current week
+        current_week.append(day)
+    
+        # Check if the current day is the end of the week
+        if is_end_of_week(day, business_days):
+            week_groups.append(current_week)
+            current_week = []
+    
+    # Handle any leftover days (e.g., at the very end of the year)
+    if current_week:
+        week_groups.append(current_week)
+    
+    # Log the weekly groups for debugging
+    log_message(f"BSE Weekly groups formed: {[[day.strftime('%Y-%m-%d') for day in week] for week in week_groups]}")
+    
+    # Calculate weekly changes based on properly aligned weekly groups
+    for week_index, week_days in enumerate(week_groups):
+        week_start = week_days[0]
+        week_end = week_days[-1]
+        week_change_header = weekly_change_headers[week_index]
+    
+        # Build the daily change headers for this week
+        daily_headers_in_week = [
+            f"D{day.strftime('%d_%m')}_Diff"
+            for day in week_days
+            if f"D{day.strftime('%d_%m')}_Diff" in daily_change_headers
+        ]
+    
+        # Calculate the weekly sum
+        if daily_headers_in_week:
+            df[week_change_header] = df[daily_headers_in_week].sum(axis=1)
+    
+    # Round off the weekly data for better readability
+    for header in weekly_change_headers:
+        if header in df.columns:
+            df[header] = df[header].round(2)
 
 
     # Calculate monthly changes based on daily changes
@@ -518,8 +559,11 @@ def calculate_and_update_changes(file_path, daily_change_headers, weekly_change_
 
     # Calculate yearly changes
     df[yearly_change_headers[0]] = df[monthly_change_headers].sum(axis=1)
-    df[week_change_header] = df[week_change_header].round(2)
-    df[month_change_header] = df[month_change_header].round(2)
+    #df[week_change_header] = df[week_change_header].round(2)
+    #df[month_change_header] = df[month_change_header].round(2)
+    for header in month_change_header:
+        if header in df.columns:
+            df[header] = df[header].round(2)
     df[yearly_change_headers[0]] = df[yearly_change_headers[0]].round(2)
     log_message(f"Updated today changes to weekly, monthly and yearly headers.")
     df.to_csv(file_path, index=False)
@@ -1041,6 +1085,7 @@ def load_data_to_gsheet(spreadsheet):
     df = pd.read_csv(consolidated_file_path)
     df = df.fillna("")  # Replace NaN with empty strings for Google Sheets compatibility
     log_message(f"Data loaded from CSV file: {consolidated_file_path} for Google Sheets.")
+    
     # Step 3: Open or create the worksheet
     try:
         worksheet = spreadsheet.worksheet(sheet_name)
@@ -1092,7 +1137,7 @@ def load_data_to_gsheet(spreadsheet):
     else:
         # If the sheet is empty, just use the new data
         merged_df = df
-    
+        
     # Step 6: Write updated data back to the worksheet
     # Prepare data for writing
     data_to_update = [merged_df.columns.tolist()] + merged_df.fillna("").astype(str).values.tolist()
