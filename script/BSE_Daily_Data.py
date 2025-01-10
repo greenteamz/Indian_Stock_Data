@@ -1128,14 +1128,18 @@ def load_data_to_gsheet(spreadsheet):
         if "Symbol_Input" in merged_part.columns and "Symbol_Input" in df.columns:
             merged_part["Symbol_Input"] = pd.Categorical(
                 merged_part["Symbol_Input"], 
-                            categories=df["Symbol_Input"], 
+                            categories=df["Symbol_Input"].unique(), 
                     ordered=True
             )
             merged_part = merged_part.sort_values("Symbol_Input").reset_index(drop=True)
             log_message("Merged data reordered based on Symbol_Input from the input data.")
         else:
                 log_message("Warning: Symbol_Input column not found in merged_part or input df, skipping reordering.")
-                
+        
+        duplicates = df["Symbol_Input"][df["Symbol_Input"].duplicated()]
+        log_message("Duplicate values in Symbol_Input:")
+        log_message(duplicates.unique())        
+        
         # Align indexes for unmatched columns
         unmatched_data = unmatched_data.reset_index(drop=True)
         merged_part = merged_part.reset_index(drop=True)
