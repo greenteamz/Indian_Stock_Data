@@ -563,7 +563,11 @@ def calculate_and_update_changes(file_path, daily_change_headers, weekly_change_
     #df[month_change_header] = df[month_change_header].round(2)
     for header in month_change_header:
         if header in df.columns:
-            df[header] = df[header].round(2)
+            # Convert column to numeric and handle errors
+            df[header] = to_numeric(df[header], errors='coerce')           
+            # Fill NaN values with 0 (or handle as needed) and round
+            df[header] = df[header].fillna(0).round(2)
+            
     df[yearly_change_headers[0]] = df[yearly_change_headers[0]].round(2)
     log_message(f"Updated today changes to weekly, monthly and yearly headers.")
     df.to_csv(file_path, index=False)
