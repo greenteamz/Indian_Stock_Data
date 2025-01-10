@@ -1118,6 +1118,19 @@ def load_data_to_gsheet(spreadsheet):
     if not existing_df.empty:       
         # Merge new data with existing data
         merged_part = pd.concat([existing_df[df.columns], df], ignore_index=True).drop_duplicates(subset=["Symbol_Input"], keep="last")
+        
+        # Step 5.1: Reorder merged_part based on the order of Symbol_Input in the input DataFrame (df)
+        if "Symbol_Input" in merged_part.columns and "Symbol_Input" in df.columns:
+            merged_part["Symbol_Input"] = pd.Categorical(
+                merged_part["Symbol_Input"], 
+                            categories=df["Symbol_Input"], 
+                    ordered=True
+            )
+            merged_part = merged_part.sort_values("Symbol_Input").reset_index(drop=True)
+            log_message("Merged data reordered based on Symbol_Input from the input data.")
+        else:
+                log_message("Warning: Symbol_Input column not found in merged_part or input df, skipping reordering.")
+
     
         # Align indexes for unmatched columns
         unmatched_data = unmatched_data.reset_index(drop=True)
