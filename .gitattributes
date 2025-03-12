@@ -1,0 +1,1 @@
+BSE_2025/master_bse/BSE_Stock_Master_2025.csv filter=lfs diff=lfs merge=lfs -text
