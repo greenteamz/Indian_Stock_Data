@@ -13,7 +13,19 @@ jobs:
     steps:
     # Step 1: Checkout the repository
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+      with:
+        lfs: true  # Enables Git LFS during checkout
+        
+    # Step 1.1: Set up Git LFS
+    - name: Install Git LFS
+      run: |
+        sudo apt update
+        sudo apt install git-lfs -y
+        git lfs install
+
+    - name: Pull LFS files
+      run: git lfs pull
 
     # Step 2: Set up Python environment
     - name: Set up Python 3.x
@@ -65,6 +77,8 @@ jobs:
       run: |
         git remote set-url origin https://x-access-token:${GH_PAT}@github.com/greenteamz/Indian_Stock_Data.git
         git status
+        git lfs track BSE_2025/master_bse/BSE_Stock_Master_2025.csv
         git add  BSE* 
-        git commit -m "$(date) BSE Daily update"
+        git add .gitattributes
+        git commit -m "$(date) BSE Daily LFS update"
         git push origin main --force
