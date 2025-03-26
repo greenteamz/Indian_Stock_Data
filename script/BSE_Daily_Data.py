@@ -912,6 +912,9 @@ def fetch_and_update_stock_data(symbol, total_symbol):
         if current_price != 'N/A' and previous_close != 'N/A' and previous_close != 0:
             today_growth_percentage = ((current_price - previous_close) / previous_close) * 100
             today_growth_percentage = round(today_growth_percentage, 2)
+            # Limit the range to prevent extreme values
+            if abs(today_growth_percentage) > 100:
+                today_growth_percentage = 0
         else:
             today_growth_percentage = 'N/A'
 
