@@ -38,18 +38,19 @@ BASE_DIR = f"BSE_{current_year}"
 
 # Subdirectories under BSE
 MASTER_DIR = os.path.join(BASE_DIR, "master_bse")
+MONTHLY_DIR = os.path.join(MASTER_DIR, "monthly")  # Fixed "monthly" folder
 LOGS_DIR = os.path.join(BASE_DIR, "logs_bse")
 CSV_DIR = os.path.join(BASE_DIR, "csv_bse")
 
 # Paths for logs, CSV, and Excel
-MASTER_LOG_FILE_PATH = os.path.join(MASTER_DIR, master_log_filename)
+MASTER_LOG_FILE_PATH = os.path.join(MONTHLY_DIR, master_log_filename)
 LOG_FILE_PATH = os.path.join(LOGS_DIR, log_filename)
-MASTER_CSV_FILE_PATH = os.path.join(MASTER_DIR, csv_filename)
+MASTER_CSV_FILE_PATH = os.path.join(MONTHLY_DIR, csv_filename)
 Daily_CSV_FILE_PATH  = os.path.join(CSV_DIR, csv_filename_daily)
-EXCEL_FILE_PATH = os.path.join(MASTER_DIR, excel_filename)
+EXCEL_FILE_PATH = os.path.join(MONTHLY_DIR, excel_filename)
 
 # Ensure all required directories exist
-os.makedirs(MASTER_DIR, exist_ok=True)
+os.makedirs(MONTHLY_DIR, exist_ok=True)
 os.makedirs(LOGS_DIR, exist_ok=True)
 os.makedirs(CSV_DIR, exist_ok=True)
 
