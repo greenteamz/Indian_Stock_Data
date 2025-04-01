@@ -28,10 +28,10 @@ current_year = ist_date.year  # Extract the current year
 
 # Generate log and CSV file names 
 log_filename = f"log_NSE_Daily_{ist_now.strftime('%Y-%m-%d_%H-%M-%S')}.txt"
-master_log_filename = f"Log_Master_NSE_{current_year}.txt"
+master_log_filename = f"Log_Master_NSE_{current_year}_{month_str}.txt"
 csv_filename = f"NSE_Stock_Master_{current_year}_{month_str}.csv"  # Append data for the same day
 csv_filename_daily = f"NSE_Stock_Daily_{ist_now.strftime('%Y-%m-%d_%H-%M-%S')}.csv"  # Append data for the same day
-excel_filename = f"NSE_Stock_Master_All_{current_year}.xlsx"  # Excel file for today
+excel_filename = f"NSE_Stock_Master_All_{current_year}_{month_str}.xlsx"  # Excel file for today
 
 # Define base directory
 BASE_DIR = f"NSE_{current_year}"
