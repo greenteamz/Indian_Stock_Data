@@ -911,7 +911,8 @@ def fetch_and_update_stock_data(symbol, total_symbol):
             today_growth_percentage = ((current_price - previous_close) / previous_close) * 100
             today_growth_percentage = round(today_growth_percentage, 2)
             # Limit the range to prevent extreme values
-            if abs(today_growth_percentage) > 100:
+            if abs(today_growth_percentage) > 25:
+                log_message(f"Today_growth_percentage: {today_growth_percentage} will be 0 for NSE: {symbol}")
                 today_growth_percentage = 0
         else:
             today_growth_percentage = 'N/A'
