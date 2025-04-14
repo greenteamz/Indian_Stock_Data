@@ -1,0 +1,5 @@
+[2025-04-14 18:37:40] Checking market holiday for Data for RELIANCE.NS on 2025-04-14 to 2025-04-15 18:37:37.317898+05:30
+[2025-04-14 18:37:40] Data: Empty DataFrame
+Columns: [(Adj Close, RELIANCE.NS), (Close, RELIANCE.NS), (High, RELIANCE.NS), (Low, RELIANCE.NS), (Open, RELIANCE.NS), (Volume, RELIANCE.NS)]
+Index: []
+[2025-04-14 18:37:40] Today is holiday or weekend. No trading data available for RELIANCE.NS from 2025-04-14 to 2025-04-15 18:37:37.317898+05:30.
