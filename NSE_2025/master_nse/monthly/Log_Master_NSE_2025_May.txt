@@ -4,3 +4,8 @@ Ticker     RELIANCE.NS  RELIANCE.NS RELIANCE.NS RELIANCE.NS RELIANCE.NS
 Date                                                                   
 2025-04-30      1405.0  1412.400024      1369.0      1402.0    25478243
 [2025-05-01 16:16:16] Today is holiday or weekend. No trading data available for RELIANCE.NS from 2025-05-01 to 2025-05-02 16:16:09.739424+05:30.
+[2025-05-02 16:16:20] Checking market holiday for Data for RELIANCE.NS on 2025-05-02 to 2025-05-03 16:16:09.665773+05:30
+[2025-05-02 16:16:20] Data: Empty DataFrame
+Columns: [(Adj Close, RELIANCE.NS), (Close, RELIANCE.NS), (High, RELIANCE.NS), (Low, RELIANCE.NS), (Open, RELIANCE.NS), (Volume, RELIANCE.NS)]
+Index: []
+[2025-05-02 16:16:20] Today is holiday or weekend. No trading data available for RELIANCE.NS from 2025-05-02 to 2025-05-03 16:16:09.665773+05:30.
