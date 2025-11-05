@@ -33410,3 +33410,9 @@ Date
 [2025-11-04 19:41:34] Data loaded successfully, no errors.
 [2025-11-04 19:41:34] Data successfully loaded to BigQuery from BSE_2025/master_bse/temp_processed.csv.
 [2025-11-04 19:41:34] BSE Daily Script execution completed.
+[2025-11-05 18:47:16] Checking market holiday for Data for RELIANCE.NS on 2025-11-05 to 2025-11-06 18:47:07.872281+05:30
+[2025-11-05 18:47:16] Data: Price             Close         High          Low         Open      Volume
+Ticker      RELIANCE.NS  RELIANCE.NS  RELIANCE.NS  RELIANCE.NS RELIANCE.NS
+Date                                                                      
+2025-11-04  1471.099976  1492.800049  1470.099976  1483.900024    10005724
+[2025-11-05 18:47:16] Today is holiday or weekend. No trading data available for RELIANCE.NS from 2025-11-05 to 2025-11-06 18:47:07.872281+05:30.
