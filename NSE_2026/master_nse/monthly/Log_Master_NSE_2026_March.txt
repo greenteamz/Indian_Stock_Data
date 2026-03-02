@@ -1,0 +1,5 @@
+[2026-03-02 16:53:23] Checking market holiday for Data for RELIANCE.NS on 2026-03-02 to 2026-03-03 16:53:18.401300+05:30
+[2026-03-02 16:53:23] Data: Empty DataFrame
+Columns: [(Adj Close, RELIANCE.NS), (Close, RELIANCE.NS), (High, RELIANCE.NS), (Low, RELIANCE.NS), (Open, RELIANCE.NS), (Volume, RELIANCE.NS)]
+Index: []
+[2026-03-02 16:53:23] Today is holiday or weekend. No trading data available for RELIANCE.NS from 2026-03-02 to 2026-03-03 16:53:18.401300+05:30.
