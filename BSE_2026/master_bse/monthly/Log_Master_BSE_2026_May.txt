@@ -242338,3 +242338,8 @@ Length: 1, dtype: str
 [2026-05-27 23:02:34] Data loaded successfully, no errors.
 [2026-05-27 23:02:34] Data successfully loaded to BigQuery from BSE_2026/master_bse/temp_processed.csv.
 [2026-05-27 23:02:34] BSE Daily Script execution completed.
+[2026-05-28 22:27:56] Checking market holiday for Data for RELIANCE.NS on 2026-05-28 to 2026-05-29 22:27:48.869116+05:30
+[2026-05-28 22:27:56] Data: Price            Close        High          Low        Open      Volume
+Ticker     RELIANCE.NS RELIANCE.NS  RELIANCE.NS RELIANCE.NS RELIANCE.NS
+2026-05-27      1352.0      1361.0  1348.599976      1353.0    13213151
+[2026-05-28 22:27:56] Today is holiday or weekend. No trading data available for RELIANCE.NS from 2026-05-28 to 2026-05-29 22:27:48.869116+05:30.
