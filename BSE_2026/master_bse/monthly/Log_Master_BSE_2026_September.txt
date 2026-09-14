@@ -145326,3 +145326,8 @@ Length: 1, dtype: str
 [2026-09-11 23:25:07] Data loaded successfully, no errors.
 [2026-09-11 23:25:07] Data successfully loaded to BigQuery from BSE_2026/master_bse/temp_processed.csv.
 [2026-09-11 23:25:07] BSE Daily Script execution completed.
+[2026-09-15 00:07:04] Checking market holiday for Data for RELIANCE.NS on 2026-09-15 to 2026-09-16 00:06:59.249701+05:30
+[2026-09-15 00:07:04] Data: Empty DataFrame
+Columns: [(Adj Close, RELIANCE.NS), (Close, RELIANCE.NS), (High, RELIANCE.NS), (Low, RELIANCE.NS), (Open, RELIANCE.NS), (Volume, RELIANCE.NS)]
+Index: []
+[2026-09-15 00:07:04] Today is holiday or weekend. No trading data available for RELIANCE.NS from 2026-09-15 to 2026-09-16 00:06:59.249701+05:30.
