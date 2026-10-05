@@ -10,3 +10,9 @@ Ticker      RELIANCE.NS  RELIANCE.NS  RELIANCE.NS  RELIANCE.NS RELIANCE.NS
 Date                                                                      
 2026-10-01  1167.699951  1183.900024  1160.800049  1180.099976    16667234
 [2026-10-02 23:52:25] Today is holiday or weekend. No trading data available for RELIANCE.NS from 2026-10-02 to 2026-10-03 23:52:18.061234+05:30.
+[2026-10-06 02:39:04] Checking market holiday for Data for RELIANCE.NS on 2026-10-06 to 2026-10-07 02:38:59.192211+05:30
+[2026-10-06 02:39:04] Data: Price             Close        High          Low         Open      Volume
+Ticker      RELIANCE.NS RELIANCE.NS  RELIANCE.NS  RELIANCE.NS RELIANCE.NS
+Date                                                                     
+2026-10-05  1186.400024      1193.0  1171.199951  1171.199951    14251054
+[2026-10-06 02:39:04] Today is holiday or weekend. No trading data available for RELIANCE.NS from 2026-10-06 to 2026-10-07 02:38:59.192211+05:30.
