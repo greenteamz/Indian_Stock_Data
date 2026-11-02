@@ -1,0 +1,6 @@
+[2026-11-03 03:49:42] Checking market holiday for Data for RELIANCE.NS on 2026-11-03 to 2026-11-04 03:49:35.101387+05:30
+[2026-11-03 03:49:42] Data: Price            Close        High          Low         Open      Volume
+Ticker     RELIANCE.NS RELIANCE.NS  RELIANCE.NS  RELIANCE.NS RELIANCE.NS
+Date                                                                    
+2026-11-02      1300.0      1300.0  1214.199951  1228.099976    88043504
+[2026-11-03 03:49:42] Today is holiday or weekend. No trading data available for RELIANCE.NS from 2026-11-03 to 2026-11-04 03:49:35.101387+05:30.
